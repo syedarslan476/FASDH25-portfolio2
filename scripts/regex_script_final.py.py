@@ -33,7 +33,7 @@ for row in rows[1:]: # process each row except the header
     if len(columns) < 6: # checking for enough columns to inlcude alternate names (in column 6 or beyond)
         continue
 
-    asciiname = columns[0]. strip()
+    asciiname = columns[0]. strip() #help from Chatgpt(conversation 1)
     if not asciiname: # only proceed if the main name is not empty
         continue 
         
@@ -58,7 +58,7 @@ for row in rows[1:]: # process each row except the header
 
 
 mentions_per_month = {}        
-#War time in Gaza  ###(Help from Chatgpt Conversation:02)
+
 war_start_date = "2023-10-07"
 
 # count the number of times each pattern is found in the entire folder:
@@ -87,7 +87,7 @@ for filename in os.listdir(folder):
 
         month_str = date_str[:7]
         
-        if count>0:   # (chatgpt help conversation 03 and 04)
+        if count>0:   # (chatgpt help)
             if place not in mentions_per_month:
                 mentions_per_month[place] = {}
             if month_str not in mentions_per_month[place]:
@@ -108,7 +108,7 @@ for place in mentions_per_month:
     print("},")
 
 rows = []
-for place in mentions_per_month:
+for place in mentions_per_month: #Chatgpt(conversation 1)
     for month in mentions_per_month[place]:
         count = mentions_per_month[place][month]
         rows.append((place, month, count))
