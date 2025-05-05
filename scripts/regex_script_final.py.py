@@ -1,29 +1,26 @@
-import re # import the regular expressions to help me match places in article text. 
-import os # import the os module.  
+import re # import the built-in library for regular expressions to match places in article text. 
+import os # import built-in library for os-dependent functions (files, ec.)
+ 
 import pandas as pd # import the pandas for working with the tabular data like TSV files.
 
-# fix this function!
-
+#write list of rows in TSV
 def write_tsv(rows, column_list, path):
-   
-    # turn the dictionary into a list of (key, value) tuples (this is correct):
-    # create a dataframe from the items list (this is correct):
-    #convert the data (list of rows) into a DataFrame with specified column names
+   #convert list of rows into dataFrame
     df = pd.DataFrame(rows, columns=column_list)
-    # write the dataframe to tsv:
-    # save the DataFrame to a .tsv file without the index column
+    
+    # convert the DataFrame to tsv file without the index column
     df.to_csv(path, sep="\t", index=False)
 
 
 
 # define which folder to use:
 # NB: these are different articles than in the previous weeks
-folder = "articles"  # defining the folder that contains the articles. these are different from the articles that were used previously in class.
+folder = "../articles"  # defining the folder that contains the articles. these are different from the articles that were used previously in class.
 
 # define the patterns we want to search:
 # Help from Chatgpt Conversation 01.
 # load the gazetteer from the tsv file:
-path = "gazetteers/geonames_gaza_selection.tsv" # load the gazatteers file contaning place names and alternate spellings
+path = "../gazetteers/geonames_gaza_selection.tsv" # load the gazatteers file contaning place names and alternate spellings
 with open(path, encoding="utf-8") as file:
     data = file.read()
 
