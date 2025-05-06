@@ -1,0 +1,62 @@
+# Mini project 02: Visualizing Place Names in news Articles: 
+Our project processes a collection of news articles to extract and visualize mentions of Gaza place names using two different methods. First, it uses regular expressions (regex-based script) which searches for places listed in a gazetteer and counts how often they appear each month. Second method it uses is named entity recognition (NER) with natural language processing tools. The results of this are then compared, mapped, and documented to explore how different methods effect what we find and how we interpret it.
+
+## 2A: Extracting Gaza Place Names Using Regex and Gazetteer:
+This is the first step of our project which involves building a dictionary of Gaza place names using a gazetteer file. It aims to identify and count place names from a set of articles related to Gaza. To do this we have used regular expressions (regex) in python. The place names are matched against a gazetteer file which contains standardized and alternate place names. This step ensures that both standard and alternate names are counted accurately across the articles.  This step is necessary to match place names accurately in the article texts even when those names are spelled differently or written in alternate forms. 
+Key steps: 
+### Use the gazetteer and corpus in the portfolio repo
+### Improve the recall of place names:
+1.	 Very firstly, we began with creating a copy of the regex script that we worked on during our class. We pasted this file into our new portfolio (FASDH25-portfolio2) and then started working on it. We change the name of file and saved it as “regex_script_atiqa_rani.py”.
+2.	Next changed the folder and path of our script to the gazetteer file and corpus folder which were present in the “FASDH25-portfolio2”. (folder = “articles” and path = “gazetteers/geonames_gaza_selection.tsv"). This step ensured that we are working with the correct files/articles.
+3.	We will now build a script to recognise place names from the files mentioned above. In this step, we will process the gazetteer file which contains the place names along with the alternate names. The gazetteer file (in .tsv format) is opened using “utf-8” encoding. This will ensure that all the characters, including special characters are read correctly.
+4.	 In our class, we only focused on the main place name (from the asciiname column). However, this method missed many mentions of places due to spelling variations or different names mentioned in the article. Therefore, in this project, the script has been modified. To address this, the script has been updated to create a regular expression (regex) which includes both the main place name (from the first column) and all alternate names (from the sixth column of the gazetteer). All these names are combined into a single regex pattern using the OR operator (“|” symbol). This tells the script to match any of the listed variants. Use of this symbol improves the recall and makes sure that no name variant is missed during the text-scanning process.  
+5.	Each of these patterns is then stored in a dictionary. In this dictionary we have the key in the main place name, and the value includes the full pattern and a counter. 
+6.	Counter is simply a number which keeps the track of how many times something happens. In our script it is used to count how many times a place name or alternate is appeared in the articles. 
+7.	The gazetteer file is formatted as a .tsv file, which helps organise structured data. Each line (or row) in the file corresponds to one place entry and is separated using the newline character \n. with each line, values such as the main place name, coordinates, and alternate names are separated by tab characters (\t). This structure allows the script to extract the correct columns, such as the main name (column 0) and alternate names (column 5), efficiently for further processing. 
+8.	Before going to process each row, we have also ensured that there are at least six columns (index 5), which is the column which has the alternate names. This makes sure that if any row does not contain this column, then it will be skipped to avoid the error. (len(column) < 6)
+9.	In case when the alternate names contain any special character like dots, to make sure that such names are not missed we have used “re.script()”. This makes the regex-safe and includes all names even if they have special characters. 
+10.	After getting the dictionary of place names with their regex patterns, the script then scans through the articles in the “article” folder. The scripts work for each article using the regex patterns and searches for mentions of place names with their alternate names. This process will help us in tracking how many times each place is mentioned across the entire collection of articles. 
+11.	At the end, this gives us a count of how many times each place is mentioned. Now using this, we will move to the next step. 
+
+## # Include only articles related to the current war: 
+
+Now once we are done with the list of place names, here in this step we will filter our articles based on the war start date. As the filenames of our articles contain the dates in the format (YYYY-MM-DD_filename.txt), so we will now add a condition to our script that ensures it only extract data of articles written after the date 2023-10-07. We define the start date of war as (war_start_date).
+For each article, the script looks at the filename. It will split the name at the underscore and takes only the first part as the date in the format (YYYY-MM-DD) and compare it with war start date. If any article was written before this date, then the script will not read it and skips it. 
+For all other articles written after this date the script will read the content (using open (file_path, encoding=”utf-8”)) and search for place names using the previously built regex patterns. For each time a place name and its alternate name are found, then the script updates the count. Thus, this step will ensure that only recent war-time mentions are considered in the further analysis of data. 
+
+### Count the mentions of each place name per month:
+
+In this step we have to count how many times each place was mentioned during each month. For this we will make an additional dictionary “mentions_per_month”. This dictionary is structured in two levels. The first level has the names for places, and for each place there is second dictionary which stores the frequency of how many times the place is mentioned in each specific month.  
+To do this step the script first checks whether a place is found in the article (if count > 0). If yes, then it checks whether that place already exists in the mentions_per_month dictionary. If it is not present, then the script adds it. After this it checks if month which is extracted from the filename already exists under that place or not. If it is not, the script creates a new entry for the month and starts the count. If it is yes, then it simply increases the count with the number of mentions in the article. 
+finally, the scripts give the output, showing each place with the number of times it is mentioned in each month. The output is given in a list of rows (place, month, and count). 
+
+## Write a tsv file that is called “regex_counts.tsv”
+Now after above all codes the script gives the output. It will save place name mentions by month into a TSV file called as (regex_counts.tsv). It will have columns for placename, month, and count. We will also do a sanity check for this.
+At the last we will rename final script file by changing it from (regex_script_atiqa_rani.py) to (regex_script_final.py).
+
+
+## 4A. Map the regex-extracted placenames
+This part focuses on visualizing place names extracted from the set of articles using regular expressions (regex). It gives an interactive animated map that shows the geographical distribution of these place names over time. It allows the users to explore how place name mentions change month by month.
+Key steps:
+###Loading Data: 
+In this step two dataset were loaded: 
+First is the regex counts file (regex_counts.tsv). This contains the place names and their frequencies (means how many times they appear in the articles). Second is the gazetteer file (geonames_gaza_selection.tsv). This provides us with the geographical coordinates (the latitude and longitude) for the places listed in the regex counts file. 
+
+### Renaming Columns for Consistency: 
+This ensures that the place names match between the two datsets, the ‘asciiname’ column in the gazetteer file is renamed to ‘placenmes’. This is necessary because both datasets need to have the same column name for merging process.
+
+### Merging the Datasets: 
+In this part the data from the two files is then merged into a single datsets. This is done by joining the data on the ‘placename’ column. After merging, the datasets contain the place names, their occurrence counts, and their geographical coordinates.
+
+### Creating the Animated Map: 
+Now using Plotly Express, an interactive map is generated with following information:
+Latitude and Longitude: These columns position the places on the map. 
+Hover information: When hovering over a place, the place name is displayed.
+Point Size: The size of each point on the map relates to the count of how often that place name appears in the articles. 
+Animation: The map is animated by month, so users can see how the frequency and distribution of place names change over time. 
+Map Projection: The map uses the natural earth project for better and clear geographical accuracy.
+### Displaying and Saving the Map: 
+After the map is generated, it is displayed interactively for users to explore. Additionally, the map is saved in two formats: 
+HTML: In this an interactive version of the map is saved as an HTML file. 
+PNG: In this a static image of the map is saved as a PNG file. 
+
