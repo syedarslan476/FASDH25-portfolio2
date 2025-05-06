@@ -52,7 +52,7 @@ ner_map.png
 It also has the (Regex_Map-Script) which builds regex maps. It also has the (ner_map_Script) and also the (ner-gazetteer).
 
 
-/Copy_of_Gaza_NER2_Abdus_Syed_Atiqa/: This have the script of the step 2B.
+/Copy_of_Gaza_NER2_Abdus_Syed_Atiqa/: This have the script of the step 2B. it also contains the script of this folder(build_gazetteer.py). we have downloaded both the scripts togetherly. 
 
 /README file/: This is file which have the final README file.
 
