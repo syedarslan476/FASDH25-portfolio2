@@ -1,9 +1,9 @@
 import re # import the built-in library for regular expressions to match places in article text. 
-import os # import built-in library for os-dependent functions (files, ec.)
+import os # import built-in library for os-dependent functions (e.g, handling files)
  
 import pandas as pd # import the pandas for working with the tabular data like TSV files.
 
-#write list of rows in TSV
+#write a list of rows to a TSV file
 def write_tsv(rows, column_list, path):
    #convert list of rows into dataFrame
     df = pd.DataFrame(rows, columns=column_list)
@@ -20,17 +20,17 @@ folder = "../articles"  # defining the folder that contains the articles. these 
 # define the patterns we want to search:
 # Help from Chatgpt Conversation 01.
 # load the gazetteer from the tsv file:
-path = "../gazetteers/geonames_gaza_selection.tsv" # load the gazatteers file contaning place names and alternate spellings
+path = "../gazetteers/geonames_gaza_selection.tsv" # load the gazetteers file contaning place names and alternate spellings
 with open(path, encoding="utf-8") as file:
     data = file.read()
 
 # build a dictionary of patterns from the place names in the first column: 
 patterns = {} # start with empty dictionary to store place names and their regex patterns and counts
-rows = data.split("\n") # splitting of file data into rows (each row representing a place entry)
+rows = data.split("\n") # split the file data into rows (each row representing a place entry)
 for row in rows[1:]: # process each row except the header
     columns = row.split("\t")
 
-    if len(columns) < 6: # checking for enough columns to inlcude alternate names (in column 6 or beyond)
+    if len(columns) < 6: # check that there are enough columns to inlcude alternate names (in column 6 or beyond)
         continue
 
     asciiname = columns[0]. strip() #help from Chatgpt(conversation 1)
@@ -43,7 +43,7 @@ for row in rows[1:]: # process each row except the header
 
     alternate_names = columns[5].strip() #extract alternate names from column and clean up using .strip() 
     if alternate_names:
-        # in case of multiple alternate names split them by comma
+        # in case of multiple alternate names, split them by comma
         alternate_list =alternate_names.split(",")
         for alternate in alternate_list:
             alternate = alternate.strip() # clean each name using .strip() to remove extra spaces or newline characters
