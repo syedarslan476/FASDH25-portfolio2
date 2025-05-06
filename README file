@@ -3,6 +3,7 @@ Our project processes a collection of news articles to extract and visualize men
 
 ## 2A: Extracting Gaza Place Names Using Regex and Gazetteer:
 This is the first step of our project which involves building a dictionary of Gaza place names using a gazetteer file. It aims to identify and count place names from a set of articles related to Gaza. To do this we have used regular expressions (regex) in python. The place names are matched against a gazetteer file which contains standardized and alternate place names. This step ensures that both standard and alternate names are counted accurately across the articles.  This step is necessary to match place names accurately in the article texts even when those names are spelled differently or written in alternate forms. 
+
 Key steps: 
 ### Use the gazetteer and corpus in the portfolio repo
 ### Improve the recall of place names:
@@ -18,7 +19,7 @@ Key steps:
 10.	After getting the dictionary of place names with their regex patterns, the script then scans through the articles in the “article” folder. The scripts work for each article using the regex patterns and searches for mentions of place names with their alternate names. This process will help us in tracking how many times each place is mentioned across the entire collection of articles. 
 11.	At the end, this gives us a count of how many times each place is mentioned. Now using this, we will move to the next step. 
 
-## # Include only articles related to the current war: 
+### Include only articles related to the current war: 
 
 Now once we are done with the list of place names, here in this step we will filter our articles based on the war start date. As the filenames of our articles contain the dates in the format (YYYY-MM-DD_filename.txt), so we will now add a condition to our script that ensures it only extract data of articles written after the date 2023-10-07. We define the start date of war as (war_start_date).
 For each article, the script looks at the filename. It will split the name at the underscore and takes only the first part as the date in the format (YYYY-MM-DD) and compare it with war start date. If any article was written before this date, then the script will not read it and skips it. 
@@ -33,6 +34,61 @@ finally, the scripts give the output, showing each place with the number of time
 ## Write a tsv file that is called “regex_counts.tsv”
 Now after above all codes the script gives the output. It will save place name mentions by month into a TSV file called as (regex_counts.tsv). It will have columns for placename, month, and count. We will also do a sanity check for this.
 At the last we will rename final script file by changing it from (regex_script_atiqa_rani.py) to (regex_script_final.py).
+
+
+
+
+
+## 2B Place Name Extraction from January 2024 News Articles
+This step analyzes a collection of news articles from January 2024 to extract and visualize place names mentioned in the text. Two techniques are used: Named Entity Recognition (NER) using the Stanza NLP library and a Regex method. The goal is to identify geographic references, clean and normalize them, c, and export the results for visualization. This project was completed as part of the FASDH25 Digital Humanities course. I got help from ChatGPT, class presentations, and colleagues.
+
+Key Steps: 
+
+### Installation and Setup:
+The first step I took was setting up the environment to perform Named Entity Recognition using Stanza. I installed it using !pip install stanza and downloaded the English model with stanza.download("en"). After that, I imported all the required libraries such as stanza, os, re, and pandas, and then initialized an NLP pipeline using:
+nlp = stanza.Pipeline(lang="en", processors='tokenize,mwt,ner')
+This command sets up the language pipeline to tokenize the text, expand multi-word tokens, and recognize named entities automatically.
+This setup was essential because Stanza provides high-quality pretrained models capable of identifying parts of text, especially geographic names. Without this NLP pipeline, I would have had to go through each article manually to identify locations, which would be time-consuming and prone to errors. Automating this process laid a solid foundation for the project.
+
+### Filtering January 2024 Articles:
+
+Once my environment was ready, I focused on narrowing down the dataset. I had a large collection of news articles from all of 2024. To ensure consistency and relevance, I chose to work only with January articles. I used Python's os module to list all the files and filtered the ones that started with 2024-01-:
+jan_files = [file for file in files if file.startswith("2024-01-") and file.endswith(".txt")]
+This gave me a precise subset of January articles from the full dataset.
+This filtering was crucial because it allowed me to perform a time-bound analysis of geographic references in the media. By using the same subset of articles for both NER and Regex methods, I ensured fairness and consistency in my comparison. It also helped reduce the volume of data, making processing faster and more manageable.
+
+### Named Entity Recognition (NER) with Stanza:
+
+After filtering the dataset, I applied the Stanza NLP pipeline to each article to extract place names. For each file, I read the text and ran it through nlp(text). I then looped through the entities and selected those with types GPE (Geo-Political Entity) or LOC (Location):
+for e in doc.entities:
+    if e.type in ["GPE", "LOC"]:
+        places[e.text] = places.get(e.text, 0) + 1
+This allowed me to build a dictionary where keys were place names and values were their frequency in the text.
+This step was powerful because it enabled automatic extraction of place names from natural language text. It eliminated the need for manually tagging data and gave me insight into how frequently different places were mentioned. The pretrained NER model was particularly helpful in identifying even complex or multi-word location names.
+
+### Cleaning and Normalizing Place Names:
+
+The place names extracted using NER were often inconsistent. Variations in spelling, abbreviations, or punctuation caused similar entities to appear as different entries. To solve this, I used regex to clean the text and a standardization dictionary to merge equivalent names:
+standard_names = {
+    'u.s.': 'United States',
+    'britain': 'United Kingdom',
+    'gaza city': 'Gaza',
+    # ... more mappings
+}
+Each place name was processed to remove punctuation, possessives, and unnecessary prefixes, then checked against this dictionary.
+This cleaning process was essential for improving accuracy. For example, mentions of "UK," "Britain," and "United Kingdom" were merged into one standardized label. Without this step, the frequency counts would be fragmented and misleading. Kulsoom helped me build the standardization dictionary, which greatly improved the quality of this part of the project.
+
+### Storing Cleaned Data:
+
+After cleaning and normalizing the place names, I saved the final output in a tab-separated values (TSV) file. This was done with the following code:
+with open("ner_counts.tsv", mode="w", encoding="utf-8") as file:
+    file.write("Place\tCount\n")
+    for place, count in normalized_places.items():
+        file.write(f"{place}\t{count}\n")
+The .tsv format ensured each row had a place name and its count, separated by a tab, and was easy to read both programmatically and manually.
+Saving the results in a TSV file gave me a reusable dataset for visualization and further analysis. It also helped avoid reprocessing the entire dataset every time I wanted to generate charts or tables. The format is supported by many data tools and spreadsheets, making the data portable and versatile.
+At last, I download the ner.counts file and I perform the (git pull), (git add .) , (git commit -m" ") and (git push) so that each member could have it on their desktop.
+
 
 
 ## 4A. Map the regex-extracted placenames
@@ -55,8 +111,91 @@ Hover information: When hovering over a place, the place name is displayed.
 Point Size: The size of each point on the map relates to the count of how often that place name appears in the articles. 
 Animation: The map is animated by month, so users can see how the frequency and distribution of place names change over time. 
 Map Projection: The map uses the natural earth project for better and clear geographical accuracy.
+
 ### Displaying and Saving the Map: 
 After the map is generated, it is displayed interactively for users to explore. Additionally, the map is saved in two formats: 
 HTML: In this an interactive version of the map is saved as an HTML file. 
 PNG: In this a static image of the map is saved as a PNG file. 
+
+
+
+## 4B. Map the NER-extracted placenames:
+To visualize the frequency of place names extracted using Named Entity Recognition (NER), I began by importing the required Python libraries like pandas and plotly.express. Pandas were used for data loading and manipulation, while plotly.express allowed for the creation of an interactive geographical map.
+python
+import pandas as pd
+import plotly.express as px
+Next, I loaded two datasets: ner_counts.tsv, which contains place names and their frequency of occurrence in the text, and NER_gazetteer.tsv, which contains the corresponding geographical coordinates (latitude and longitude) for those place names. Since these files are tab-separated, I specified the separator as \t:
+python
+ner_counts = pd.read_csv("ner_counts.tsv", sep="\t")
+gazetteer = pd.read_csv("NER_gazetteer.tsv", sep="\t")
+
+To prepare the datasets for merging, I renamed the relevant columns so both dataframes would have consistent naming conventions. This made the merge operation more reliable and reduced the chance of errors due to mismatched column names:
+python
+ner_counts.rename(columns={"Place": "placename", "Count": "frequency"}, inplace=True)
+gazetteer.rename(columns={"Name": "placename", "Latitude": "latitude", "Longitude": "longitude"}, inplace=True)
+
+I then merged the two dataframes using placename as the common key. This step was essential to associate each place name with its frequency and corresponding coordinates in a single unified dataframe:
+python
+merged = pd.merge(ner_counts, gazetteer, on="placename")
+
+
+Before plotting, I added a check for missing coordinate values to ensure the map would only display valid locations. This helps prevent rendering issues or inaccuracies:
+python
+merged = merged.dropna(subset=["latitude", "longitude"])
+For visualization, I used Plotly Express to create a scatter_geo plot. Each point on the map represents a place, and both its size and color reflect how often that place was mentioned. This makes the data easier to interpret visually, with higher-frequency places appearing more prominently:
+python
+fig = px.scatter_geo(
+    merged,
+    lat="latitude",
+    lon="longitude",
+    hover_name="placename",
+    size="frequency",
+    color="frequency",
+    size_max=20,
+    opacity=0.6,
+    title="NER Place Name Frequencies - January 2024",
+    projection="natural earth",
+    color_continuous_scale="Viridis"
+)
+I customized the map’s appearance to improve readability by setting the land color to light gray and adjusting the margins:
+python
+fig.update_layout(
+    geo=dict(showland=True, landcolor="LightGray"),
+    margin={"r":0,"t":50,"l":0,"b":0}
+)
+
+Finally, I saved the map in two formats, a .html file for interactive use in a browser and a .png image for static inclusion in documents. I also used fig.show() to display the map during development:
+python
+fig.write_html("ner_map.html")
+fig.write_image("ner_map.png")
+fig.show()
+This process provided an intuitive and visually engaging way to understand the geographical patterns in the NER data. It also helped ensure data integrity through careful preprocessing and handling of missing values.
+
+## Describe the advantages and disadvantages of the two techniques used (regex+gazetteer and NER).
+
+
+
+
+
+## Include an image of your final maps in the README file.
+![image](C:\Users\Fine Gallery\Downloads\FASDH25-portfolio2\maps)
+
+
+
+
+
+
+
+
+
+
+
+## Compare the January 2024 maps generated from the regex- and NER data.
+
+
+
+
+## Self-critical analysis: what are the weaknesses of the project as it currently is; what could be improved if there was more time?
+
+
 

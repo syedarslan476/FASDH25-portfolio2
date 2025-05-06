@@ -13,14 +13,14 @@ coords.rename(columns={'asciiname': 'placename'}, inplace=True)
 data = pd.merge(counts, coords, on="placename")
 
 # Create animated map
-fig = px.scatter_geo(
+fig = px.scatter_map(
     data,
     lat="latitude",  # This is latitude for location.
-    lon="longitude"  # This is longitude for location
+    lon="longitude",  # This is longitude for location
     hover_name="placename",  # Display the place name when hovering
     size="count",            # Size of the point based on count 
     animation_frame="month",   # animate the map by month
-    projection="natural earth", # Use of natural earth projection for the map
+    projection_type="natural earth", # Use of natural earth projection for the map
     title="Regex-extracted Place Names by Month"   # Title of the map
 )
 
