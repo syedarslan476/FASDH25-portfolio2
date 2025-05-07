@@ -87,7 +87,7 @@ for filename in os.listdir(folder):
 
         month_str = date_str[:7]
         
-        if count>0:   # (chatgpt help)
+        if count>0:   # (Chatgpt help conversation 1)
             if place not in mentions_per_month:
                 mentions_per_month[place] = {}
             if month_str not in mentions_per_month[place]:
